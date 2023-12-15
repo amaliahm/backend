@@ -82,6 +82,36 @@ async function getArticltes() {
     }
 }
 
+async function getAchats() {
+    try {
+        const rows = await connection.query('SELECT * FROM achats');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+async function getVersementF() {
+    try {
+        const rows = await connection.query('SELECT * FROM versement_f');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+async function getVersementC() {
+    try {
+        const rows = await connection.query('SELECT * FROM versement_c');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
 /* main function */
 
 
@@ -91,11 +121,17 @@ async function index () {
         const fournisseurs = await getFournisseurs();
         const ventes = await getVentes();
         const articles = await getArticltes();
+        const achats = await getAchats();
+        const versement_f = await getVersementF();
+        const versement_c = await getVersementC();
         getData = {
             clients: clients,
             fournisseurs: fournisseurs,
             ventes: ventes,
-            articles: articles
+            articles: articles,
+            achats: achats,
+            versement_f: versement_f,
+            versement_c: versement_c,
         }
     } catch(error) {
         console.log(error)
@@ -128,97 +164,45 @@ app.get('/home', (req, res) => {
 
 let command = ''
 
-function addClient(valeur) {
-    command = `INSERT INTO clients (nom, ville, wilaya, telephone) VALUES ('${valeur.nom}', '${valeur.ville}', '${valeur.wilaya}', '${valeur.telephone}');`;
-    try {
-        connection.query(command, (err, valeur) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            eventEmitter.emit('dataInserted');
-            res.send('data inserted')
-            console.log(data)
-        })
-        
-    } catch(error) {
-            console.log(error)
-    }
-}
-
-function addFournisseur(valeur) {
-    command = `INSERT INTO fournisseurs (nom, ville, wilaya, telephone) VALUES ('${data.valeur}', '${data.valeur}', '${data.valeur}', '${data.valeur}');`;
-    try {
-        connection.query(command, (err, valeur) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            eventEmitter.emit('dataInserted');
-            res.send('data inserted')
-            console.log(data)
-        })
-        
-    } catch(error) {
-            console.log(error)
-    }
-}
-
-function addArticle (valeur) {
-    console.log(valeur)
-    command = `INSERT INTO articles (\`designation d'article\`, article, \`prix unitaire\`, \`stock min\`, \`qte stock\`) VALUES ('${valeur["designation d'article"]}', '${valeur.article}', '${valeur['prix unitaire']}', '${valeur['stock min']}', 150);`;
-    try {
-        connection.query(command, (err, valeur) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            eventEmitter.emit('dataInserted');
-            res.send('data inserted')
-            console.log(data)
-        })
-        
-    } catch(error) {
-            console.log(error)
-    }
-}
-
-function addVente(valeur) {
-    console.log(valeur)
-    command = `INSERT INTO ventes (\`designation d'article\`, client , article, pu, qte, \`vente n=°\`, date) VALUES ('${valeur["designation d'article"]}', '${valeur.client}', 'LN', '${valeur['prix unitaire']}', 1, '${valeur.annee}', '${valeur.annee}-${valeur.mois}-${valeur.jour}');`;
-    try {
-        connection.query(command, (err, valeur) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            eventEmitter.emit('dataInserted');
-            res.send('data inserted')
-            console.log(data)
-        })
-        
-    } catch(error) {
-            console.log(error)
-    }
-}
-
 app.post('/home', async (req, res) => {
     const {table, data} = req.body;
     switch(table) {
         case 'clients': 
-            addClient(data)
+            command = `INSERT INTO clients (nom, ville, wilaya, telephone) VALUES ('${data.nom}', '${data.ville}', '${data.wilaya}', '${data.telephone}');`;
             break;
         case 'fournisseurs': 
-            addFournisseur(data)
+            command = `INSERT INTO fournisseurs (nom, ville, wilaya, telephone) VALUES ('${data.valeur}', '${data.valeur}', '${data.valeur}', '${data.valeur}');`;
             break;
         case 'articles': 
-            addArticle(data)
+            command = `INSERT INTO articles (\`designation d'article\`, article, \`prix unitaire\`, \`stock min\`, \`qte stock\`) VALUES ('${data["designation d'article"]}', '${data.article}', '${data['prix unitaire']}', '${data['stock min']}', 150);`;
             break;
         case 'ventes': 
-            addVente(data)
+            command = `INSERT INTO ventes (\`designation d'article\`, client , article, pu, qte, \`vente n=°\`, date) VALUES ('${data["designation d'article"]}', '${data.client}', 'LN', '${data['prix unitaire']}', 1, '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
+            break;
+        case 'achats':
+            command = `INSERT INTO achats (\`designation d'article\`, fournisseur , pu, qte, \`achat n=°\`, date) VALUES ('${data["designation d'article"]}', '${data.fournisseur}', '${data.pu}', '${data.qte}', '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
+            break;
+        case 'versement_c' :
+            command = `INSERT INTO versement_c (\`versement or\`, \`versement argent\`, \`retour or\`, \`retour argent\`, \`or v\`, client , fonte, titre, \`versement n=°\`, date) VALUES ('${data["versement or"]}', '${data["versement argent"]}', '${data["retour or"]}', '${data["retour argent"]}', '${data["or v"]}', '${data.person}', '${data.fonte}', '${data.titre}', '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
+            break;
+        case 'versement_f' :
+            command = `INSERT INTO versement_f (\`versement or\`, \`versement argent\`, \`retour or\`, \`retour argent\`, \`or v\`, fournisseur , fonte, titre, \`versement n=°\`, date) VALUES ('${data["versement or"]}', '${data["versement argent"]}', '${data["retour or"]}', '${data["retour argent"]}', '${data["or v"]}', '${data.person}', '${data.fonte}', '${data.titre}', '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
             break;
         default: 
             break;
+    }
+    try {
+        connection.query(command, (err, valeur) => {
+            if (err) {
+                console.log(err)
+                return
+            }
+            eventEmitter.emit('dataInserted');
+            res.send('data inserted')
+            console.log(data)
+        })
+    } catch(error) {
+            console.log(error)
     }
     io.emit('datInserted', getData)
     res.send('data inserted')
@@ -242,58 +226,34 @@ app.put('/home', (req, res) => {
     switch(table) {
         case 'clients': 
             forUpdate = `UPDATE clients SET nom = '${data.nom}', ville = '${data.ville}', wilaya = '${data.wilaya}', telephone = '${data.telephone}' WHERE id = '${data.id}';`;
-            try {
-                connection.query(forUpdate, (err, data) => {
-                    if (err) {
-                        console.log(err)
-                        return
-                    }
-                    eventEmitter.emit('dataUpdated');
-                    res.send('data updated')
-                    console.log(data)
-                })
-                
-            } catch(error) {
-                    console.log(error)
-            }
             break;
         case 'fournisseurs': 
             forUpdate = `UPDATE fournisseurs SET nom = '${data.nom}', ville = '${data.ville}', wilaya = '${data.wilaya}', telephone = '${data.telephone}' WHERE id = '${data.id}';`;
-            try {
-                connection.query(forUpdate, (err, data) => {
-                    if (err) {
-                        console.log(err)
-                        return
-                    }
-                    eventEmitter.emit('dataUpdated');
-                    res.send('data updated')
-                    console.log(data)
-                })
-                
-            } catch(error) {
-                    console.log(error)
-            }
-            break;
-        
         case 'articles': 
             forUpdate = `UPDATE articles SET \`designation d'article\` = '${data["designation d'article"]}', article = '${data.article}', \`prix unitaire\` = '${data["prix unitaire"]}', \`stock min\` = '${data["stock min"]}' WHERE id = '${data.id}';`;
-            try {
-                connection.query(forUpdate, (err, data) => {
-                    if (err) {
-                        console.log(err)
-                        return
-                    }
-                    eventEmitter.emit('dataUpdated');
-                    res.send('data updated')
-                    console.log(data)
-                })
-                
-            } catch(error) {
-                    console.log(error)
-            }
+            break;
+        case 'ventes': 
+            forUpdate = `UPDATE ventes SET \`designation d'article\` = '${data["designation d'article"]}', client = '${data.client}', qte = '${data.qte}', pu = '${data.pu}' WHERE id = '${data.id}';`;
+            break;
+        case 'achats': 
+            forUpdate = `UPDATE achats SET \`designation d'article\` = '${data["designation d'article"]}', fournisseur = '${data.fournisseur}', qte = '${data.qte}', pu = '${data.pu}' WHERE id = '${data.id}';`;
             break;
         default: 
             break;
+    }
+    try {
+        connection.query(forUpdate, (err, data) => {
+            if (err) {
+                console.log(err)
+                return
+            }
+            eventEmitter.emit('dataUpdated');
+            res.send('data updated')
+            console.log(data)
+        })
+        
+    } catch(error) {
+            console.log(error)
     }
     res.send('data updated')
     index()
