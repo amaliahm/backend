@@ -4,7 +4,6 @@ import mariadb from 'mariadb'
 import EventEmitter from 'events'
 import {Server as SocketIOServer} from 'socket.io'
 import { createServer } from "http";
-import { Console, log } from "console";
 import { exit } from "process";
 
 let getData
@@ -27,8 +26,8 @@ const eventEmitter = new EventEmitter();
 const pool = mariadb.createPool({
     host: "localhost",
     user: "bouzian",
-    password: "jewellery",
-    database: "jewellery",
+    password: "bouzian",
+    database: "bouzian",
     waitForConnections: true,
 })
 
@@ -40,11 +39,24 @@ try {
     console.log(error)
 }
 
-/* get data */
+/* get view fournisseur */
 
-async function getClients() {
+async function get_view_fournisseur() {
     try {
-        const rows = await connection.query('SELECT * FROM clients ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM view_fournisseur ORDER BY id_fournisseur DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    } finally {
+        if (connection) connection.end()
+    }
+}
+/* get view client */
+
+async function get_view_client() {
+    try {
+        const rows = await connection.query('SELECT * FROM view_client ORDER BY id_client DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -54,9 +66,11 @@ async function getClients() {
     }
 }
 
-async function getFournisseurs() {
+/* get achat et article d'un fournisseur */
+
+async function get_view_achat_articles_fournisseur() {
     try {
-        const rows = await connection.query('SELECT * FROM fournisseurs ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM total_view_achats ORDER BY id_achat DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -64,9 +78,11 @@ async function getFournisseurs() {
     }
 }
 
-async function getVentes() {
+/* get vente et article d'un client */
+
+async function get_view_vente_articles_client() {
     try {
-        const rows = await connection.query('SELECT * FROM ventes ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM view_vente_articles_client ORDER BY id_vente DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -74,9 +90,11 @@ async function getVentes() {
     }
 }
 
-async function getArticltes() {
+/* get versement des fournisseurs */
+
+async function get_view_versement_fournisseur() {
     try {
-        const rows = await connection.query('SELECT * FROM articles ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM view_versement_fournisseur ORDER BY id_versement_fournisseur DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -84,9 +102,11 @@ async function getArticltes() {
     }
 }
 
-async function getAchats() {
+/* get versement des client */
+
+async function get_view_versement_client() {
     try {
-        const rows = await connection.query('SELECT * FROM achats ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM view_versement_client ORDER BY id_versement_client DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -94,9 +114,11 @@ async function getAchats() {
     }
 }
 
-async function getVersementF() {
+/* get view importations */
+
+async function get_view_importation() {
     try {
-        const rows = await connection.query('SELECT * FROM versement_f ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM view_importation ORDER BY id_achat_importation DESC;;');
         return rows
     } catch (err) {
         console.log(err)
@@ -104,9 +126,11 @@ async function getVersementF() {
     }
 }
 
-async function getVersementC() {
+/* get importations */
+
+async function get_importation() {
     try {
-        const rows = await connection.query('SELECT * FROM versement_c ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM importation ORDER BY id_importation DESC;');
         return rows
     } catch (err) {
         console.log(err)
@@ -114,9 +138,11 @@ async function getVersementC() {
     }
 }
 
-async function getImportation() {
+/* get magasin */
+
+async function get_magasin() {
     try {
-        const rows = await connection.query('SELECT * FROM importation ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM magasin ORDER BY id_magasin DESC;');
         return rows
     } catch (err) {
         console.log(err)
@@ -124,9 +150,11 @@ async function getImportation() {
     }
 }
 
-async function getAchatImportation() {
+/* get retour client */
+
+async function get_view_retour_client() {
     try {
-        const rows = await connection.query('SELECT * FROM achat_importation ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM view_retour_client ORDER BY id_retour_client DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -134,9 +162,73 @@ async function getAchatImportation() {
     }
 }
 
-async function getVersementImportation() {
+/* get retour fournisseur */
+
+async function get_view_retour_fournisseur() {
     try {
-        const rows = await connection.query('SELECT * FROM versement_importation ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM view_retour_fournisseur ORDER BY id_retour_fournisseur DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+/* get reparation */
+
+async function get_view_reparation() {
+    try {
+        const rows = await connection.query('SELECT * FROM view_reparation ORDER BY id_reparation DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+/* get charge */
+
+async function get_view_charge() {
+    try {
+        const rows = await connection.query('SELECT * FROM view_charge ORDER BY id_charge DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+/* get titre */
+
+async function getTitres() {
+    try {
+        const rows = await connection.query('SELECT id_titre, is_deleted, valeur AS titre FROM titres ORDER BY id_titre DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+/* get view produits */
+
+async function get_view_produits() {
+    try {
+        const rows = await connection.query('SELECT * FROM view_produits ORDER BY id_famille');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+
+//li mazal 
+/* get bourse */
+
+async function getBourse() {
+    try {
+        const rows = await connection.query('SELECT * FROM bourse ORDER BY id DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -146,30 +238,41 @@ async function getVersementImportation() {
 
 /* main function */
 
-
 async function index () {
     try {
-        const clients = await getClients()
-        const fournisseurs = await getFournisseurs();
-        const ventes = await getVentes();
-        const articles = await getArticltes();
-        const achats = await getAchats();
-        const versement_f = await getVersementF();
-        const versement_c = await getVersementC();
-        const importation = await getImportation();
-        const achat_importation = await getAchatImportation();
-        const versement_importation = await getVersementImportation();
+        const client = await get_view_client()
+        const fournisseur = await get_view_fournisseur()
+        const view_achat_articles_fournisseur = await get_view_achat_articles_fournisseur();
+        const view_vente_articles_client = await get_view_vente_articles_client();
+        const view_versement_client = await get_view_versement_client();
+        const view_versement_fournisseur = await get_view_versement_fournisseur();
+        const view_importation = await get_view_importation();
+        const view_retour_client = await get_view_retour_client();
+        const view_retour_fournisseur = await get_view_retour_fournisseur();
+        const view_reparation = await get_view_reparation();
+        const view_charge = await get_view_charge();
+        const titres = await getTitres();
+        const importation = await get_importation();
+        const magasin = await get_magasin();
+        const view_produits = await get_view_produits()
+        // const bourse = await getBourse();
         getData = {
-            clients: clients,
-            fournisseurs: fournisseurs,
-            ventes: ventes,
-            articles: articles,
-            achats: achats,
-            versement_f: versement_f,
-            versement_c: versement_c,
+            client: client,
+            fournisseur: fournisseur,
+            view_achat_articles_fournisseur: view_achat_articles_fournisseur,
+            view_vente_articles_client: view_vente_articles_client,
+            view_versement_client: view_versement_client,
+            view_versement_fournisseur: view_versement_fournisseur,
+            view_importation: view_importation,
+            view_retour_client: view_retour_client,
+            view_retour_fournisseur: view_retour_fournisseur,
+            view_reparation: view_reparation,
+            view_charge: view_charge,
             importation: importation,
-            achat_importation: achat_importation,
-            versement_importation: versement_importation,
+            magasin: magasin,
+            view_produits: view_produits,
+            titres: titres,
+        //     bourse: bourse,
         }
     } catch(error) {
         console.log(error)
@@ -203,11 +306,9 @@ function runCommand (command, res ) {
         connection.query(command, (err, valeur) => {
             if (err) {
                 console.log(err)
-                console.log('2')
                 return
             }
             eventEmitter.emit('dataInserted');
-            console.log('4')
             console.log(data)
         })
     } catch(error) {
@@ -223,16 +324,22 @@ function runCommand (command, res ) {
 
 app.post('/clients/add-client', async (req, res) => {
     const client = req.body;
+    console.log(client)
     const insert = 
-       `INSERT INTO clients 
-       (nom, ville, wilaya, telephone, titre, email) 
+       `INSERT INTO client
+       (nom_client, ville, wilaya, id_titre, telephone, email, adresse, NRC, NIF, NIS, N_art) 
        VALUES 
-       ('${client.nom}',
+       ('${client.nom.toUpperCase()}',
         '${client.ville}', 
         '${client.wilaya}', 
-        '${client.telephone}', 
-        '${client.titre}', 
-        '${client.email}');`;
+        '${client.id_titre}', 
+        '${client.telephone}',
+        '${client.email}',
+        '${client.adresse}',
+        '${client.NRC}',
+        '${client.NIF}',
+        '${client.NIS}',
+        '${client.N_art}');`;
         runCommand(insert, res)
 })
 
@@ -241,15 +348,20 @@ app.post('/clients/add-client', async (req, res) => {
 app.post('/fournisseurs/add-fournisseur', async (req, res) => {
     const fournisseur = req.body;
     const insert = 
-       `INSERT INTO fournisseurs 
-       (nom, ville, wilaya, telephone, titre, email) 
+       `INSERT INTO fournisseur
+       (nom_fournisseur, ville, wilaya, id_titre, telephone, email, adresse, NRC, NIF, NIS, N_art) 
        VALUES 
-       ('${fournisseur.nom}',
+       ('${fournisseur.nom.toUpperCase()}',
         '${fournisseur.ville}', 
         '${fournisseur.wilaya}', 
-        '${fournisseur.telephone}', 
-        '${fournisseur.titre}', 
-        '${fournisseur.email}');`;
+        '${fournisseur.id_titre}', 
+        '${fournisseur.telephone}',
+        '${fournisseur.email}',
+        '${fournisseur.adresse}',
+        '${fournisseur.NRC}',
+        '${fournisseur.NIF}',
+        '${fournisseur.NIS}',
+        '${fournisseur.N_art}');`;
         runCommand(insert, res)
 })
 
@@ -257,9 +369,19 @@ app.post('/fournisseurs/add-fournisseur', async (req, res) => {
 
 app.post('/achats/add-achat', async (req, res) => {
     const achats = req.body;
+    const total_achat = achats.shift()
+    const command = `INSERT INTO total_achats (quantite_achats, valeur_achats, id_fournisseur , ancien_solde, nombre_piece,\`achat total n=°\`,date) VALUES (${total_achat.total_quantite},${total_achat.total_argent},${achats[0].id_fournisseur},${total_achat.ancien_solde},${total_achat.nombre_piece},'${total_achat.annee}','${total_achat.annee}-${total_achat.mois}-${total_achat.jour}');`
+    runCommand(command, res)
+    let id 
+    try {
+        id = await connection.query('SELECT MAX(id_total_achat) AS id FROM total_achats;');
+    } catch (err) {
+        console.log(err)
+    }
+    const currentDate = new Date();
     Object.keys(achats).map((achat) => {
         const insert = 
-        `INSERT INTO achats (\`designation d'article\`, famille, fournisseur , pu,qte,\`achat n=°\`,date) VALUES ('${achats[achat].article}','${achats[achat].famille}','${achats[achat].fournisseur}',${achats[achat]['prix unitaire']},${achats[achat].quantite},'${achats[achat].annee}','${achats[achat].annee}-${achats[achat].mois}-${achats[achat].jour}');`;
+        `INSERT INTO achats (id_total_achat, id_article, prix_unitaire , quantite,\`achat n=°\`) VALUES (${id[0].id},${achats[achat].id_article},${achats[achat].prix_unitaire},${achats[achat].quantite},'${String(currentDate.getFullYear())}');`;
         runCommand(insert, res)
     })
 })
@@ -268,82 +390,130 @@ app.post('/achats/add-achat', async (req, res) => {
 
 app.post('/ventes/add-vente', async (req, res) => {
     const ventes = req.body;
+    const total_vente = ventes.shift()
+    console.log(ventes)
+    console.log(total_vente)
+    const command = `INSERT INTO total_ventes (quantite_ventes, valeur_ventes, id_client , ancien_solde, nombre_piece,\`vente total n=°\`,date) VALUES (${total_vente.total_quantite},${total_vente.total_argent},${ventes[0].id_client},${total_vente.ancien_solde},${total_vente.nombre_piece},'${total_vente.annee}','${total_vente.annee}-${total_vente.mois}-${total_vente.jour}');`
+    runCommand(command, res)
+    let id 
+    try {
+        id = await connection.query('SELECT MAX(id_total_vente) AS id FROM total_ventes;');
+    } catch (err) {
+        console.log(err)
+    }
+    const currentDate = new Date();
     Object.keys(ventes).map((vente) => {
         const insert = 
-        `INSERT INTO ventes (\`designation d'article\`, famille, client , article, pu, qte, \`vente n=°\`, date) VALUES ('${ventes[vente].article}', '${ventes[vente].famille}', '${ventes[vente].client}', 'LN', '${ventes[vente]['prix unitaire']}', '${ventes[vente].quantite}', '${ventes[vente].annee}', '${ventes[vente].annee}-${ventes[vente].mois}-${ventes[vente].jour}');`;
+        `INSERT INTO ventes (id_total_vente, id_article, prix_unitaire , quantite,\`vente n=°\`) VALUES (${id[0].id},${ventes[vente].id_article},${ventes[vente].prix_unitaire},${ventes[vente].quantite},'${String(currentDate.getFullYear())}');`;
         runCommand(insert, res)
     })
 })
 
-app.post('/versements/add-versement', async (req, res) => {
+/* add versement client */
+
+app.post('/versements/add-versement-client', async (req, res) => {
     const data = req.body;
-    const table = data.person == 'fournisseur' ? 'versement_f' : data.person == 'client' ? 'versement_c' : ''
-    if (table !== '') {
-        const command = `INSERT INTO ${table} (\`versement or\`, \`versement argent\`, \`retour or\`, \`retour argent\`, \`or v\`, ${data.person == 'fournisseur' ? 'fournisseur' : 'client'} , fonte, titre, \`versement n=°\`, date) VALUES ('${data["versement or"]}', '${data["versement argent"]}', '${data["retour or"]}', '${data["retour argent"]}', '${data["or v"]}', '${data.nom}', '${data.fonte}', '${data.titre}', '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
-        runCommand(command, res)
-    }
+    console.log(data)
+    const command = `INSERT INTO versement_client (versement_or, versement_casse, ancien_solde, ancien_solde_casse, versement_argent, or_v , id_client, net_750, fonte, id_titre, \`versement client n=°\`, date) VALUES (${data["versement or"]}, ${data["versement casse"]}, ${data.solde}, ${0}, ${data["versement argent"]}, ${data["or v"]}, ${data.id_client}, ${data['net 750']}, ${data.fonte}, ${data.id_titre}, '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
+    runCommand(command, res)
+})
+
+/* add versement fournisseur */
+
+app.post('/versements/add-versement-fournisseur', async (req, res) => {
+    const data = req.body;
+    const currentDate = new Date();
+    console.log(data)
+    const command = `INSERT INTO versement_fournisseur (versement_or, ancien_solde, versement_argent, id_fournisseur, id_titre, \`versement fournisseur n=°\`, date, id_total_achat) VALUES (${data.total_quantite_achats}, ${data.solde}, ${data.valeur_achats}, ${data.id_fournisseur}, ${data.id_titre}, '${String(currentDate.getFullYear())}', '${String(currentDate.getFullYear())}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}', ${data.id_total_achat});`;
+    runCommand(command, res)
+})
+
+/* add retour */
+
+app.post('/retours/add-retour', async (req, res) => {
+    const data = req.body;
+    const command = data.person === 'client' ?
+    `INSERT INTO retour_client (retour_or, ancien_solde, retour_argent, id_client, \`retour client n=°\`, date) VALUES (${data['retour or']}, ${data.solde}, ${data['retour argent']}, ${data.id_client}, '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');` :
+    `INSERT INTO retour_fournisseur (retour_or, ancien_solde, retour_argent, id_fournisseur, \`retour fournisseur n=°\`, date) VALUES (${data['retour or']}, ${data.solde}, ${data['retour argent']}, ${data.id_fournisseur}, '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
+    runCommand(command, res)
 })
 
 /* add importation */
 
 app.post('/importations', async (req, res) => {
     const data = req.body;
-    const command = `INSERT INTO importation (importateur) VALUES ('${data.importateur}');`;
+    const command = `INSERT INTO importation (nom_importateur) VALUES ('${data.nom_importateur}');`;
     runCommand(command, res)
 })
 
+/* add magasin */
+
+app.post('/magasins', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO magasin (nom_magasin) VALUES ('${data.nom_magasin}');`;
+    runCommand(command, res)
+})
+
+/* add reparation */
+
+app.post('/magasins/:id/add-reparation', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO reparation (id_magasin, id_client, id_fournisseur, \`reparation n=°\`, observation, date, prix_client, prix_fournisseur, titre_client, titre_fournisseur, poids) VALUES (${data.id}, ${data.id_client}, ${data.id_fournisseur}, '${data.annee}', '${data.observation}','${data.annee}-${data.mois}-${data.jour}',${data['prix client']},${data['prix fournisseur']},${data['titre client']},${data['titre fournisseur']},${data.poids});`;
+    runCommand(command, res)
+})
 
 /* add achat d'importateur */
 
 app.post('/importations/achat_importation/add', async (req, res) => {
     const achats = req.body;
+    console.log(achats)
     Object.keys(achats).map((achat) => {
-        const insert = `INSERT INTO achat_importation (\`poid 18k\`, \`prix unitaire\`, importateur, date) VALUES (${achats[achat]['poid 18k']},${achats[achat]['prix unitaire']},'${achats[achat].importateur}','${achats[achat].annee}-${achats[achat].mois}-${achats[achat].jour}');`;
+        const insert = `INSERT INTO achat_importation (poid_18, prix_unitaire, id_importation, \`achat importation n=°\`, date) VALUES (${achats[achat]['poid 18k']},${achats[achat]['prix unitaire']},${achats[achat].id_importation}, '${achats[achat].annee}', '${achats[achat].annee}-${achats[achat].mois}-${achats[achat].jour}');`;
         runCommand(insert, res)
     })
 })
-
 
 /* add versement d'importateur */
 
 app.post('/importations/versement_importation/add', async (req, res) => {
     const versement = req.body;
-    const command = `INSERT INTO versement_importation (importateur, \`poid 18k\`, titre, \`versement €\`,\`change €/$\`,\`versement $\`, date) VALUES ('${versement.importateur}',${versement.poid},${versement.titre},${versement['versement €']},${versement['change €/$']},${versement['versement $']}, '${versement.annee}-${versement.mois}-${versement.jour}');`;
+    const command = versement.type === '€'  
+    ? `INSERT INTO versement_importation (id_importation, poid_18, poid_24, id_titre, change_dollar_euro, versement_euro, \`versement importation n=°\`, date, versement) VALUES (${versement.id_importation},${versement['poid 18k']},${versement['poid 24k']},${versement.id_titre}, ${versement['change €/$']}, ${versement['versement €']}, '${versement.annee}', '${versement.annee}-${versement.mois}-${versement.jour}', ${versement.versement});`
+    : `INSERT INTO versement_importation (id_importation, poid_18, poid_24, id_titre, versement_dollar, \`versement importation n=°\`, date, versement) VALUES (${versement.id_importation},${versement['poid 18k']},${versement['poid 24k']},${versement.id_titre}, ${versement['versement $']}, '${versement.annee}', '${versement.annee}-${versement.mois}-${versement.jour}', ${versement.versement});`;
     runCommand(command, res)
 })
 
-let command = ''
+/* add famille */
 
-app.post('/home', async (req, res) => {
-    const {table, data} = req.body;
-    switch(table) {
-        case 'articles': 
-            command = `INSERT INTO articles (\`designation d'article\`, article, \`prix unitaire\`, \`stock min\`) VALUES ('${data["designation d'article"]}', '${data.article}', '${data['prix unitaire']}', '${data['stock min']}');`;
-            break;
-        case 'ventes': 
-            command = `INSERT INTO ventes (\`designation d'article\`, client , article, pu, qte, \`vente n=°\`, date) VALUES ('${data["designation d'article"]}', '${data.client}', 'LN', '${data.pu}', '${data.qte}', '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
-            break;
-        default: 
-            break;
-    }
-    try {
-        connection.query(command, (err, valeur) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            eventEmitter.emit('dataInserted');
-            res.send('data inserted')
-            console.log(data)
-        })
-    } catch(error) {
-            console.log(error)
-            exit(1)
-            return
-    }
-    io.emit('datInserted', getData)
-    res.send('data inserted')
-    index()
+app.post('/produits', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO familles (nom_famille) VALUES ('${data.famille}');`;
+    runCommand(command, res)
+})
+
+/* add article */
+
+app.post('/produits/:id/add', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO articles (nom_article, id_famille, id_fournisseur, prix_achat, prix_vente, valeur_stock, stock_min, mode_de_gestion) VALUES ('${data.article}', ${data.id_famille}, ${data.id_fournisseur}, ${data['prix achat']}, ${data['prix vente']}, ${data['valeur de stock']}, ${data['stock min']}, '${data['mode de gestion']}');`;
+    runCommand(command, res)
+})
+
+/* add mouvement */
+
+app.post('/bourse/add', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO bourse (date, mouvement, quantite, \`prix unitaire\`) VALUES ('${data.jour}-${data.mois}-${data.annee}', '${data.mouvement}', ${data.quantite}, ${data['prix unitaire']});`
+    console.log(command)
+    runCommand(command, res)
+})
+
+/* add titre */
+
+app.post('/titres', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO titres (valeur) VALUES (${parseFloat(data.titre)});`;
+    runCommand(command, res)
 })
 
 io.on('connection', (socket) => {
@@ -358,171 +528,223 @@ io.on('connection', (socket) => {
 
 let forUpdate = ''
 
+/* update clients */
+
 app.put('/clients/:id', (req, res) => {
     const data = req.body
-    let command = `UPDATE clients SET nom = '${data.nom}', ville = '${data.ville}', wilaya = '${data.wilaya}', telephone = '${data.telephone}', email = '${data.email}' WHERE id = '${data.id}';`;
+    let command = `UPDATE client SET nom_client = '${data.nom.toUpperCase()}', ville = '${data.ville}', wilaya = '${data.wilaya}', telephone = '${data.telephone}', adresse = '${data.adresse}', email = '${data.email}' WHERE id_client = '${data.id_client}';`;
     runCommand(command, res)
 })
+
+/* update fournisseurs */
 
 app.put('/fournisseurs/:id', (req, res) => {
     const data = req.body
-    let command = `UPDATE fournisseurs SET nom = '${data.nom}', ville = '${data.ville}', wilaya = '${data.wilaya}', telephone = '${data.telephone}', email = '${data.email}' WHERE id = '${data.id}';`;
+    let command = `UPDATE fournisseur SET nom_fournisseur = '${data.nom.toUpperCase()}', ville = '${data.ville}', wilaya = '${data.wilaya}', telephone = '${data.telephone}', adresse = '${data.adresse}', email = '${data.email}' WHERE id_fournisseur = '${data.id_fournisseur}';`;
     runCommand(command, res)
 })
 
-app.put('/achats/:id', (req, res) => {
-    const data = req.body
-    let command = `UPDATE achats SET \`designation d'article\` = '${data["designation d'article"]}', fournisseur = '${data.fournisseur}', famille = '${data.famille}', qte = '${data.qte}', pu = '${data.pu}' WHERE id = '${data.id}';`;
-    runCommand(command, res)
-})
+/* update achats */
 
-app.put('/ventes/:id', (req, res) => {
+app.put('/achats/:id/:id', (req, res) => {
     const data = req.body
-    let command = `UPDATE ventes SET \`designation d'article\` = '${data["designation d'article"]}', client = '${data.client}', famille = '${data.famille}', qte = '${data.qte}', pu = '${data.pu}' WHERE id = '${data.id}';`;
     console.log(data)
-    console.log(command)
-    // runCommand(command, res)
+    let command = `UPDATE achats SET prix_unitaire = ${data.prix_unitaire}, quantite = ${data.quantite} WHERE id_achat = '${data.id_achat}';`;
+    runCommand(command, res)
 })
+
+/* update ventes */
+
+app.put('/ventes/:id/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE ventes SET prix_unitaire = ${data.prix_unitaire}, quantite = ${data.quantite} WHERE id_vente = '${data.id_vente}';`;
+    runCommand(command, res)
+})
+
+/* update versements */
 
 app.put('/versements/:id', (req, res) => {
     const data = req.body
-    const person = (data['versement n=°']).split('-')[1] == 'FOURNISSEUR' ? 'fournisseur' : 'client'
-    const table = (data['versement n=°']).split('-')[1] == 'FOURNISSEUR' ? 'versement_f' : 'versement_c'
-    let command = `UPDATE ${table} SET \`versement or\` = '${data["versement or"]}', \`versement argent\` = '${data["versement argent"]}', \`retour or\` = '${data["retour or"]}', \`retour argent\` = '${data["retour argent"]}', \`or v\` = '${data["or v"]}', ${person} = '${person == 'fournisseur' ? data.fournisseur : data.client}', fonte = '${data.fonte}', titre = '${data.titre}' WHERE id = '${data.id}';`;
+    let command =  data.type === 'client' ?
+    `UPDATE versement_client SET versement_or = ${data["versement or"]}, versement_argent = ${data["versement argent"]}, or_v = ${data["or v"]}, fonte = '${data.fonte}', versement_casse = ${data['versement casse']} WHERE id_versement_client = '${data.id}';` :
+    `UPDATE versement_fournisseur SET versement_or = ${data["versement or"]}, versement_argent = ${data["versement argent"]}, or_v = ${data["or v"]}, fonte = '${data.fonte}', versement_casse = ${data['versement casse']} WHERE id_versement_fournisseur = '${data.id}';`;
     runCommand(command, res)
 })
+
+/* update retours */
+
+app.put('/retours/:id', (req, res) => {
+    const data = req.body
+    let command =  data.type === 'client' ?
+    `UPDATE retour_client SET retour_or = ${data.retour_or}, retour_argent = ${data.retour_argent} WHERE id_retour_client = '${data.id}';` :
+    `UPDATE retour_fournisseur SET retour_or = ${data.retour_or}, retour_argent = ${data.retour_argent} WHERE id_retour_fournisseur = '${data.id}';`;
+    runCommand(command, res)
+})
+
+/* update importation */
 
 app.put('/importations/:id', (req, res) => {
     const data = req.body
-    let command = `UPDATE importation SET importateur = '${data.importateur}' WHERE id = '${data.id}';`;
+    let command = `UPDATE importation SET nom_importateur = '${data.nom_importateur}' WHERE id_importation = '${data.id_importation}';`;
     runCommand(command, res)
 })
+
+/* update magasin */
+
+app.put('/magasins', (req, res) => {
+    const data = req.body
+    let command = `UPDATE magasin SET nom_magasin = '${data.nom_magasin}' WHERE id_magasin = '${data.id_magasin}';`;
+    runCommand(command, res)
+})
+
+/* update reparation */
+
+app.put('/magasins/:id/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE reparation SET titre_client = ${data.client_titre}, prix_client = ${data.prix_client}, poids = ${data.poids}, prix_fournisseur = ${data.prix_fournisseur}, titre_fournisseur = ${data.fournisseur_titre}, observation = '${data.observation}' WHERE id_reparation = ${data.id_reparation};`;
+    runCommand(command, res)
+})
+
+/* update achat d'importation */
 
 app.put('/importations/achat_importation/:id', (req, res) => {
     const data = req.body
-    console.log(data)
-    let command = `UPDATE achat_importation SET \`poid 18k\` = ${data['poid 18k']}, \`prix unitaire\` = ${data['prix unitaire']} WHERE id = '${data.id}';`;
+    let command = `UPDATE achat_importation SET poid_18 = ${data['poid 18k']}, prix_unitaire = ${data['prix unitaire']} WHERE id_achat_importation = '${data.id_achat_importation}';`;
     runCommand(command, res)
 })
+
+/* update versement d'importation */
 
 app.put('/importations/versement_importation/:id', (req, res) => {
     const data = req.body
-    console.log(data)
-    let command = `UPDATE versement_importation SET \`poid 18k\` = ${data['poid 18k']}, \`versement €\` = ${data['versement €']}, \`change €/$\` = ${data['change €/$']}, \`versement $\` = ${data['versement $']}, titre = ${data.titre} WHERE id = '${data.id}';`;
+    let command = `UPDATE versement_importation SET poid_18 = ${data['poid 18k']}, poid_24 = ${data['poid 24k']}, versement_dollar = ${data['versement $']}, change_dollar_euro = ${data['change €/$']}, versement_euro = ${data['versement €']}, id_titre = ${data.id_titre}, versement = ${data.versement} WHERE id_versement_importation = ${data.id_versement_importation};`;
     runCommand(command, res)
 })
 
-app.put('/home', (req, res) => {
-    const {table, data} = req.body
-    switch(table) {
-        case 'articles': 
-            forUpdate = `UPDATE articles SET \`designation d'article\` = '${data["designation d'article"]}', article = '${data.article}', \`prix unitaire\` = '${data["prix unitaire"]}', \`stock min\` = '${data["stock min"]}' WHERE id = '${data.id}';`;
-            break;
-        case 'ventes': 
-            forUpdate = `UPDATE ventes SET \`designation d'article\` = '${data["designation d'article"]}', client = '${data.client}', qte = '${data.qte}', pu = '${data.pu}' WHERE id = '${data.id}';`;
-            break;
-        default: 
-            break;
-    }
-    try {
-        connection.query(forUpdate, (err, data) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            eventEmitter.emit('dataUpdated');
-            res.send('data updated')
-            console.log(data)
-        })
-        
-    } catch(error) {
-            console.log(error)
-    }
-    res.send('data updated')
-    index()
+/* update famille */
+
+app.put('/produits/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE familles SET nom_famille = '${data.nom}' WHERE id_famille = ${data.id};`;
+    runCommand(command, res)
+})
+
+/* update article */
+
+app.put('/produits/:id/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE articles SET id_fournisseur = ${data.id_fournisseur}, prix_achat = ${data["prix achat"]}, prix_vente = ${data['prix vente']}, valeur_stock = ${data["valeur de stock"]}, stock_min = ${data["stock min"]}, mode_de_gestion = '${data["mode de gestion"]}', nom_article = '${data.nom_article}' WHERE id_article = ${data.id_article};`;
+    runCommand(command, res)
+})
+
+/* update titre */
+
+app.put('/titres/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE titres SET valeur = ${parseFloat(data.titre)} WHERE id_titre = ${data.id_titre};`;
+    runCommand(command, res)
 })
 
 /* delete */
 
 app.delete('/clients/:id', (req, res) => {
     const data = parseInt(req.url.split('/')[2])
-    let command = `DELETE FROM clients WHERE id = '${data}'`;
+    let command = `UPDATE client SET is_deleted = ${true} WHERE id_client = '${data}';`;
     runCommand(command, res)
 })
 
-app.delete('/fournisseurs/:id', (req, res) => {
+app.delete('/fournisseurs/:id_fournisseur', (req, res) => {
     const data = parseInt(req.url.split('/')[2])
-    let command = `DELETE FROM fournisseurs WHERE id = '${data}'`;
+    let command = `UPDATE fournisseur SET is_deleted = ${true} WHERE id_fournisseur = '${data}';`;
     runCommand(command, res)
 })
 
 app.delete('/achats/:id', (req, res) => {
-    const data = parseInt(req.url.split('/')[2])
-    let command = `DELETE FROM achats WHERE id = '${data}'`;
+    const data = req.body
+    console.log(data)
+    let command = `UPDATE total_achats SET is_deleted = ${true} WHERE id_total_achat = ${data['0'].id_total_achat}`;
+    runCommand(command, res)
+})
+
+app.delete('/achats/:id/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE achats SET is_deleted = ${true} WHERE id_achat = ${data.id_achat}`;
     runCommand(command, res)
 })
 
 app.delete('/ventes/:id', (req, res) => {
-    const data = parseInt(req.url.split('/')[2])
-    let command = `DELETE FROM ventes WHERE id = '${data}'`;
+    const data = req.body
+    console.log(data)
+    let command = `UPDATE total_ventes SET is_deleted = ${true} WHERE id_total_vente = ${data['0'].id_total_vente}`;
     runCommand(command, res)
 })
 
+app.delete('/ventes/:id/:id', (req, res) => {
+    const data = req.body
+    console.log(data)
+    let command = `UPDATE ventes SET is_deleted = ${true} WHERE id_vente = ${data.id_vente}`;
+    runCommand(command, res)
+})
 
 app.delete('/versements/:id', (req, res) => {
-    const {table, id} = req.body
-    if (table != '') {
-        let command = `DELETE FROM ${table} WHERE id = '${id}'`;
-        runCommand(command, res)
-    }
+    const data = req.body
+        let command = data.type === 'fournisseur' ? `UPDATE versement_fournisseur SET is_deleted = ${true} WHERE id_versement_fournisseur = '${data.id}';` : `UPDATE versement_client SET is_deleted = ${true} WHERE id_versement_client = '${data.id}';`;
+            runCommand(command, res)
+})
+
+app.delete('/retours/:id', (req, res) => {
+    const data = req.body
+        let command = data.type === 'fournisseur' ? `UPDATE retour_fournisseur SET is_deleted = ${true} WHERE id_retour_fournisseur = '${data.id}';` : `UPDATE retour_client SET is_deleted = ${true} WHERE id_retour_client = '${data.id}';`;
+            runCommand(command, res)
 })
 
 app.delete('/importations/:id', (req, res) => {
-    const data = parseInt(req.url.split('/')[2])
-    let command = `DELETE FROM importation WHERE id = '${data}'`;
+    const data = req.body
+    let command = `UPDATE importation SET is_delete = ${true} WHERE id_importation = '${data.id}';`;
     runCommand(command, res)
 })
 
 app.delete('/importations/achat_importation/:id', (req, res) => {
-    const data = parseInt(req.url.split('/')[3])
-    console.log(data)
-    let command = `DELETE FROM achat_importation WHERE id = '${data}'`;
+    const data = req.body
+    let command = `UPDATE achat_importation SET is_delete = ${true} WHERE id_achat_importation = '${data.id_achat_importation}';`;
     runCommand(command, res)
 })
-
 
 app.delete('/importations/versement_importation/:id', (req, res) => {
-    const data = parseInt(req.url.split('/')[3])
-    console.log(data)
-    let command = `DELETE FROM versement_importation WHERE id = '${data}'`;
+    const data = req.body
+    let command = `UPDATE versement_importation SET is_delete = ${true} WHERE id_versement_importation = '${data.id_versement_importation}';`;
     runCommand(command, res)
 })
 
-app.delete('/home', (req, res) => {
-    const {table, data} = req.body
-    const command = `DELETE FROM ${table} WHERE id = '${data.id}'`;
-    try {
-        connection.query(command, (err, data) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            eventEmitter.emit('dataDeleted');
-            res.send('deleted')
-            console.log(data)
-        })
-        console.log('done')
-        
-    } catch(error) {
-            console.log(error)
-    }
-    res.send('deleted')
-    index()
-    
+app.delete('/magasins', (req, res) => {
+    const data = req.body
+    let command = `UPDATE magasin SET is_deleted = ${true} WHERE id_magasin = '${data.id}';`;
+    runCommand(command, res)
 })
 
+app.delete('/magasins/:id/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE reparation SET is_deleted = ${true} WHERE id_reparation = '${data.id_reparation}';`;
+    runCommand(command, res)
+})
 
+app.delete('/produits/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE familles SET is_deleted = ${true} WHERE id_famille = '${data.id}';`;
+    runCommand(command, res)
+})
 
+app.delete('/produits/:id/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE articles SET is_deleted = ${true} WHERE id_article = '${data.id_article}';`;
+    runCommand(command, res)
+})
+
+app.delete('/titres/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE titres SET is_deleted = ${true} WHERE id_titre = ${data.id_titre};`;
+    runCommand(command, res)
+})
 
 connection.end();
 
