@@ -324,7 +324,6 @@ function runCommand (command, res ) {
 
 app.post('/clients/add-client', async (req, res) => {
     const client = req.body;
-    console.log(client)
     const insert = 
        `INSERT INTO client
        (nom_client, ville, wilaya, id_titre, telephone, email, adresse, NRC, NIF, NIS, N_art) 
@@ -391,8 +390,6 @@ app.post('/achats/add-achat', async (req, res) => {
 app.post('/ventes/add-vente', async (req, res) => {
     const ventes = req.body;
     const total_vente = ventes.shift()
-    console.log(ventes)
-    console.log(total_vente)
     const command = `INSERT INTO total_ventes (quantite_ventes, valeur_ventes, id_client , ancien_solde, nombre_piece,\`vente total n=°\`,date) VALUES (${total_vente.total_quantite},${total_vente.total_argent},${ventes[0].id_client},${total_vente.ancien_solde},${total_vente.nombre_piece},'${total_vente.annee}','${total_vente.annee}-${total_vente.mois}-${total_vente.jour}');`
     runCommand(command, res)
     let id 
@@ -413,7 +410,6 @@ app.post('/ventes/add-vente', async (req, res) => {
 
 app.post('/versements/add-versement-client', async (req, res) => {
     const data = req.body;
-    console.log(data)
     const command = `INSERT INTO versement_client (versement_or, versement_casse, ancien_solde, ancien_solde_casse, versement_argent, or_v , id_client, net_750, fonte, id_titre, \`versement client n=°\`, date) VALUES (${data["versement or"]}, ${data["versement casse"]}, ${data.solde}, ${0}, ${data["versement argent"]}, ${data["or v"]}, ${data.id_client}, ${data['net 750']}, ${data.fonte}, ${data.id_titre}, '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
     runCommand(command, res)
 })
@@ -423,7 +419,6 @@ app.post('/versements/add-versement-client', async (req, res) => {
 app.post('/versements/add-versement-fournisseur', async (req, res) => {
     const data = req.body;
     const currentDate = new Date();
-    console.log(data)
     const command = `INSERT INTO versement_fournisseur (versement_or, ancien_solde, versement_argent, id_fournisseur, id_titre, \`versement fournisseur n=°\`, date, id_total_achat) VALUES (${data.total_quantite_achats}, ${data.solde}, ${data.valeur_achats}, ${data.id_fournisseur}, ${data.id_titre}, '${String(currentDate.getFullYear())}', '${String(currentDate.getFullYear())}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}', ${data.id_total_achat});`;
     runCommand(command, res)
 })
@@ -466,7 +461,6 @@ app.post('/magasins/:id/add-reparation', async (req, res) => {
 
 app.post('/importations/achat_importation/add', async (req, res) => {
     const achats = req.body;
-    console.log(achats)
     Object.keys(achats).map((achat) => {
         const insert = `INSERT INTO achat_importation (poid_18, prix_unitaire, id_importation, \`achat importation n=°\`, date) VALUES (${achats[achat]['poid 18k']},${achats[achat]['prix unitaire']},${achats[achat].id_importation}, '${achats[achat].annee}', '${achats[achat].annee}-${achats[achat].mois}-${achats[achat].jour}');`;
         runCommand(insert, res)
@@ -504,7 +498,6 @@ app.post('/produits/:id/add', async (req, res) => {
 app.post('/bourse/add', async (req, res) => {
     const data = req.body;
     const command = `INSERT INTO bourse (date, mouvement, quantite, \`prix unitaire\`) VALUES ('${data.jour}-${data.mois}-${data.annee}', '${data.mouvement}', ${data.quantite}, ${data['prix unitaire']});`
-    console.log(command)
     runCommand(command, res)
 })
 
@@ -515,6 +508,23 @@ app.post('/titres', async (req, res) => {
     const command = `INSERT INTO titres (valeur) VALUES (${parseFloat(data.titre)});`;
     runCommand(command, res)
 })
+
+/* add sous type */
+
+app.post('/charges/types/:id', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO sous_type_charge (id_type, nom_sous_type) VALUES (${data.id}, '${data.nom}');`;
+    runCommand(command, res)
+})
+
+/* add type */
+
+app.post('/charges/types', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO type_charge (nom_type) VALUES ('${data.nom}');`;
+    runCommand(command, res)
+})
+
 
 io.on('connection', (socket) => {
     console.log('client connected')
@@ -548,7 +558,6 @@ app.put('/fournisseurs/:id', (req, res) => {
 
 app.put('/achats/:id/:id', (req, res) => {
     const data = req.body
-    console.log(data)
     let command = `UPDATE achats SET prix_unitaire = ${data.prix_unitaire}, quantite = ${data.quantite} WHERE id_achat = '${data.id_achat}';`;
     runCommand(command, res)
 })
@@ -645,6 +654,18 @@ app.put('/titres/:id', (req, res) => {
     runCommand(command, res)
 })
 
+/* update type */
+
+app.put('/charges/types/:id', (req, res) => {
+    const data = req.body
+    console.log(data)
+    let command =  data.type === 'type' ?
+    `UPDATE type_charge SET nom_type = '${data.nom}' WHERE id_type = ${data.id};` :
+    `UPDATE sous_type_charge SET nom_sous_type = '${data.nom}' WHERE id_sous_type = ${data.id};`;
+    console.log(command)
+    runCommand(command, res)
+})
+
 /* delete */
 
 app.delete('/clients/:id', (req, res) => {
@@ -661,7 +682,6 @@ app.delete('/fournisseurs/:id_fournisseur', (req, res) => {
 
 app.delete('/achats/:id', (req, res) => {
     const data = req.body
-    console.log(data)
     let command = `UPDATE total_achats SET is_deleted = ${true} WHERE id_total_achat = ${data['0'].id_total_achat}`;
     runCommand(command, res)
 })
@@ -674,14 +694,12 @@ app.delete('/achats/:id/:id', (req, res) => {
 
 app.delete('/ventes/:id', (req, res) => {
     const data = req.body
-    console.log(data)
     let command = `UPDATE total_ventes SET is_deleted = ${true} WHERE id_total_vente = ${data['0'].id_total_vente}`;
     runCommand(command, res)
 })
 
 app.delete('/ventes/:id/:id', (req, res) => {
     const data = req.body
-    console.log(data)
     let command = `UPDATE ventes SET is_deleted = ${true} WHERE id_vente = ${data.id_vente}`;
     runCommand(command, res)
 })
@@ -743,6 +761,14 @@ app.delete('/produits/:id/:id', (req, res) => {
 app.delete('/titres/:id', (req, res) => {
     const data = req.body
     let command = `UPDATE titres SET is_deleted = ${true} WHERE id_titre = ${data.id_titre};`;
+    runCommand(command, res)
+})
+
+app.delete('/charges/types/:id', (req, res) => {
+    const data = req.body
+    console.log(data)
+    let command =  data.type === 'type' ? `UPDATE type_charge SET is_deleted = ${true} WHERE id_type = ${data.id};` : `UPDATE sous_type_charge SET is_deleted = ${true} WHERE id_sous_type = ${data.id};`;
+    console.log(command)
     runCommand(command, res)
 })
 
