@@ -547,6 +547,14 @@ app.post('/charges/add-charge', async (req, res) => {
     runCommand(command, res)
 })
 
+/* add charge */
+
+app.post('/commands/add-command', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO command (date, observation, id_magasin, id_client, id_fournisseur, id_article, \`command n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', ${parseInt(data.id_magasin)}, ${parseInt(data.id_client)}, ${parseInt(data.id_fournisseur)}, ${parseInt(data.id_article)}, '${(data.annee)}');`;
+    runCommand(command, res)
+})
+
 
 io.on('connection', (socket) => {
     console.log('client connected')
@@ -694,6 +702,14 @@ app.put('/charges/:id', (req, res) => {
     runCommand(command, res)
 })
 
+/* update command */
+
+app.put('/commands/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE command SET observation = '${data.observation}', id_article = ${data.id_article}, id_client = ${data.id_client}, id_fournisseur = ${data.id_fournisseur} WHERE id_command = ${data.id_command};`;
+    runCommand(command, res)
+})
+
 /* delete */
 
 app.delete('/clients/:id', (req, res) => {
@@ -801,6 +817,12 @@ app.delete('/charges/types/:id', (req, res) => {
 app.delete('/charges/:id', (req, res) => {
     const data = req.body
     let command = `UPDATE charge SET is_deleted = ${true} WHERE id_charge = ${data.id_charge};`;
+    runCommand(command, res)
+})
+
+app.delete('/commands/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE command SET is_deleted = ${true} WHERE id_command = ${data.id_command};`;
     runCommand(command, res)
 })
 
