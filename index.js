@@ -222,6 +222,18 @@ async function get_view_produits() {
     }
 }
 
+/* get view command */
+
+async function get_view_command() {
+    try {
+        const rows = await connection.query('SELECT * FROM view_command ORDER BY id_command DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
 
 //li mazal 
 /* get bourse */
@@ -255,6 +267,7 @@ async function index () {
         const importation = await get_importation();
         const magasin = await get_magasin();
         const view_produits = await get_view_produits()
+        const view_command = await get_view_command()
         // const bourse = await getBourse();
         getData = {
             client: client,
@@ -272,6 +285,7 @@ async function index () {
             magasin: magasin,
             view_produits: view_produits,
             titres: titres,
+            view_command: view_command,
         //     bourse: bourse,
         }
     } catch(error) {
@@ -525,6 +539,14 @@ app.post('/charges/types', async (req, res) => {
     runCommand(command, res)
 })
 
+/* add charge */
+
+app.post('/charges/add-charge', async (req, res) => {
+    const data = req.body;
+    const command = `INSERT INTO charge (date, designation, id_sous_type, montant, utilisateur, \`charge n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.designation}', ${parseInt(data.id_sous_type)}, ${parseFloat(data.montant)}, '${data.utilisateur}', '${(data.annee)}');`;
+    runCommand(command, res)
+})
+
 
 io.on('connection', (socket) => {
     console.log('client connected')
@@ -658,11 +680,17 @@ app.put('/titres/:id', (req, res) => {
 
 app.put('/charges/types/:id', (req, res) => {
     const data = req.body
-    console.log(data)
     let command =  data.type === 'type' ?
     `UPDATE type_charge SET nom_type = '${data.nom}' WHERE id_type = ${data.id};` :
     `UPDATE sous_type_charge SET nom_sous_type = '${data.nom}' WHERE id_sous_type = ${data.id};`;
-    console.log(command)
+    runCommand(command, res)
+})
+
+/* update charge */
+
+app.put('/charges/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE charge SET montant = ${data.montant}, designation = '${data.designation}' WHERE id_charge = ${data.id_charge};`;
     runCommand(command, res)
 })
 
@@ -766,9 +794,13 @@ app.delete('/titres/:id', (req, res) => {
 
 app.delete('/charges/types/:id', (req, res) => {
     const data = req.body
-    console.log(data)
     let command =  data.type === 'type' ? `UPDATE type_charge SET is_deleted = ${true} WHERE id_type = ${data.id};` : `UPDATE sous_type_charge SET is_deleted = ${true} WHERE id_sous_type = ${data.id};`;
-    console.log(command)
+    runCommand(command, res)
+})
+
+app.delete('/charges/:id', (req, res) => {
+    const data = req.body
+    let command = `UPDATE charge SET is_deleted = ${true} WHERE id_charge = ${data.id_charge};`;
     runCommand(command, res)
 })
 
