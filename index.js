@@ -234,6 +234,30 @@ async function get_view_command() {
     }
 }
 
+/* get view command */
+
+async function get_view_reception() {
+    try {
+        const rows = await connection.query('SELECT * FROM view_reception ORDER BY id_reception DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
+/* get casse */
+
+async function get_casse() {
+    try {
+        const rows = await connection.query('SELECT casse.*, fournisseur.nom_fournisseur, client.nom_client FROM casse LEFT JOIN fournisseur ON fournisseur.id_fournisseur = casse.id_fournisseur LEFT JOIN client ON client.id_client = casse.id_client ORDER BY id_casse DESC');
+        return rows
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+}
+
 
 //li mazal 
 /* get bourse */
@@ -268,6 +292,8 @@ async function index () {
         const magasin = await get_magasin();
         const view_produits = await get_view_produits()
         const view_command = await get_view_command()
+        const view_reception = await get_view_reception()
+        const casse = await get_casse()
         // const bourse = await getBourse();
         getData = {
             client: client,
@@ -286,6 +312,8 @@ async function index () {
             view_produits: view_produits,
             titres: titres,
             view_command: view_command,
+            view_reception: view_reception,
+            casse: casse,
         //     bourse: bourse,
         }
     } catch(error) {
@@ -547,11 +575,48 @@ app.post('/charges/add-charge', async (req, res) => {
     runCommand(command, res)
 })
 
-/* add charge */
+/* add command */
 
 app.post('/commands/add-command', async (req, res) => {
     const data = req.body;
     const command = `INSERT INTO command (date, observation, id_magasin, id_client, id_fournisseur, id_article, \`command n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', ${parseInt(data.id_magasin)}, ${parseInt(data.id_client)}, ${parseInt(data.id_fournisseur)}, ${parseInt(data.id_article)}, '${(data.annee)}');`;
+    runCommand(command, res)
+})
+
+/* add receptions */
+
+app.post('/receptions/add-reception', async (req, res) => {
+    const receptions = req.body;
+    console.log(receptions)
+    const total_reception = receptions.shift()
+    const command = `INSERT INTO total_reception (poid, monatnt, id_fournisseur , ancien_solde, nombre_piece,\`bon n=°\`,date) VALUES (${total_reception.total_quantite},${total_reception.montant},${receptions[0].id_fournisseur},${total_reception.ancien_solde},${total_reception.nombre_piece},'${total_reception.annee}','${total_reception.annee}-${total_reception.mois}-${total_reception.jour}');`
+    runCommand(command, res)
+    let id 
+    try {
+        id = await connection.query('SELECT MAX(id_total_reception) AS id FROM total_reception;');
+    } catch (err) {
+        console.log(err)
+    }
+    const currentDate = new Date();
+    Object.keys(receptions).map((rec) => {
+        const insert = 
+        `INSERT INTO receptions (id_total_reception, id_article, titre , quantite, chutte, prix_achat, prix_vente, prix_achat_facon, prix_vente_facon, montant_achat, montant_vente) VALUES (${id[0].id},${receptions[rec].id_article},${receptions[rec].titre},${receptions[rec].quantite},${receptions[rec].chutte},${receptions[rec]['prix achat']},${receptions[rec]['prix vente']},${receptions[rec]['prix achat facon']},${receptions[rec]['prix vente facon']},${receptions[rec]['montant achat']},${receptions[rec]['montant vente']});`;
+        runCommand(insert, res)
+    })
+})
+
+/* add casse */
+
+app.post('/casse/add-casse', async (req, res) => {
+    const data = req.body;
+    console.log(data)
+    const command = data.operation === 'achat' ?
+     `INSERT INTO casse (date, observation, operation, id_fournisseur, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'achat', ${parseInt(data.id_fournisseur)}, 'fournisseur',${parseInt(data.prix)},${parseInt(data.poid)},${parseInt(data.total)},${parseInt(data.solde)},${parseInt(data.solde) + parseInt(data.total)}, '${data.niveau_de_stock}', '${(data.annee)}');` :
+     data.operation === 'vente' ?
+     `INSERT INTO casse (date, observation, operation, id_client, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'vente', ${parseInt(data.id_client)}, 'client',${parseInt(data.prix)},${parseInt(data.poid)}, ${parseInt(data.total)},${parseInt(data.solde)},${parseInt(data.solde) + parseInt(data.total)}, '${data.niveau_de_stock}','${(data.annee)}');` :
+     data.operation === 'versement client' ?
+     `INSERT INTO casse (date, observation, operation, id_client, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'versement client', ${parseInt(data.id_client)}, 'client',${parseInt(data.argent)},${parseInt(data.poid)},${parseInt(data.argent)},${parseInt(data.solde)},${parseInt(data.solde) - parseInt(data.argent)}, '${data.niveau_de_stock}', '${(data.annee)}');` :
+     `INSERT INTO casse (date, observation, operation, id_fournisseur, person, prix, poid,total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'versement fournisseur', ${parseInt(data.id_fournisseur)}, 'fournisseur',${parseInt(data.argent)},${parseInt(data.poid)}, ${parseInt(data.argent)},${parseInt(data.solde)}, ${parseInt(data.solde) - parseInt(data.argent)}, '${data.niveau_de_stock}', '${(data.annee)}');`;
     runCommand(command, res)
 })
 
