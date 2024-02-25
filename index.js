@@ -611,12 +611,12 @@ app.post('/casse/add-casse', async (req, res) => {
     const data = req.body;
     console.log(data)
     const command = data.operation === 'achat' ?
-     `INSERT INTO casse (date, observation, operation, id_fournisseur, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'achat', ${parseInt(data.id_fournisseur)}, 'fournisseur',${parseInt(data.prix)},${parseInt(data.poid)},${parseInt(data.total)},${parseInt(data.solde)},${parseInt(data.solde) + parseInt(data.total)}, '${data.niveau_de_stock}', '${(data.annee)}');` :
+     `INSERT INTO casse (date, observation, operation, id_fournisseur, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'achat', ${parseInt(data.id_fournisseur)}, 'fournisseur',${parseFloat(data.prix)},${parseFloat(data.poid)},${parseFloat(data.total)},${parseFloat(data.solde)},${parseFloat(data.solde) + parseFloat(data.total)}, '${data.niveau_de_stock}', '${(data.annee)}');` :
      data.operation === 'vente' ?
-     `INSERT INTO casse (date, observation, operation, id_client, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'vente', ${parseInt(data.id_client)}, 'client',${parseInt(data.prix)},${parseInt(data.poid)}, ${parseInt(data.total)},${parseInt(data.solde)},${parseInt(data.solde) + parseInt(data.total)}, '${data.niveau_de_stock}','${(data.annee)}');` :
+     `INSERT INTO casse (date, observation, operation, id_client, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'vente', ${parseInt(data.id_client)}, 'client',${parseFloat(data.prix)},${parseFloat(data.poid)}, ${parseFloat(data.total)},${parseFloat(data.solde)},${parseFloat(data.solde) + parseFloat(data.total)}, '${data.niveau_de_stock}','${(data.annee)}');` :
      data.operation === 'versement client' ?
-     `INSERT INTO casse (date, observation, operation, id_client, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'versement client', ${parseInt(data.id_client)}, 'client',${parseInt(data.argent)},${parseInt(data.poid)},${parseInt(data.argent)},${parseInt(data.solde)},${parseInt(data.solde) - parseInt(data.argent)}, '${data.niveau_de_stock}', '${(data.annee)}');` :
-     `INSERT INTO casse (date, observation, operation, id_fournisseur, person, prix, poid,total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'versement fournisseur', ${parseInt(data.id_fournisseur)}, 'fournisseur',${parseInt(data.argent)},${parseInt(data.poid)}, ${parseInt(data.argent)},${parseInt(data.solde)}, ${parseInt(data.solde) - parseInt(data.argent)}, '${data.niveau_de_stock}', '${(data.annee)}');`;
+     `INSERT INTO casse (date, observation, operation, id_client, person, prix, poid, total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'versement client', ${parseInt(data.id_client)}, 'client',${parseFloat(data.argent)},${parseFloat(data.poid)},${parseFloat(data.argent)},${parseFloat(data.solde)},${parseFloat(data.solde) - parseFloat(data.argent)}, '${data.niveau_de_stock}', '${(data.annee)}');` :
+     `INSERT INTO casse (date, observation, operation, id_fournisseur, person, prix, poid,total, ancien_solde,nouveau_solde, niveau_stock, \`casse n=°\`) VALUES ('${data.annee}-${data.mois}-${data.jour}', '${data.observation}', 'versement fournisseur', ${parseInt(data.id_fournisseur)}, 'fournisseur',${parseFloat(data.argent)},${parseFloat(data.poid)}, ${parseFloat(data.argent)},${parseFloat(data.solde)}, ${parseFloat(data.solde) - parseFloat(data.argent)}, '${data.niveau_de_stock}', '${(data.annee)}');`;
     runCommand(command, res)
 })
 
@@ -774,6 +774,14 @@ app.put('/commands/:id', (req, res) => {
     let command = `UPDATE command SET observation = '${data.observation}', id_article = ${data.id_article}, id_client = ${data.id_client}, id_fournisseur = ${data.id_fournisseur} WHERE id_command = ${data.id_command};`;
     runCommand(command, res)
 })
+/* update casse */
+
+app.put('/casse/:id', (req, res) => {
+    const data = req.body;
+    console.log(data)
+    const command = `UPDATE casse SET observation = '${data.observation}', prix = ${parseFloat(data.prix)}, poid = ${parseFloat(data.poid)}, total = ${parseFloat(data.total)}, nouveau_solde = ${parseFloat(data.nouveau_solde)}, niveau_stock = '${data.niveau_stock}' WHERE id_casse = ${parseInt(data.id_casse)};`;
+    runCommand(command, res)
+})
 
 /* delete */
 
@@ -888,6 +896,13 @@ app.delete('/charges/:id', (req, res) => {
 app.delete('/commands/:id', (req, res) => {
     const data = req.body
     let command = `UPDATE command SET is_deleted = ${true} WHERE id_command = ${data.id_command};`;
+    runCommand(command, res)
+})
+
+app.delete('/casse/:id', (req, res) => {
+    const data = req.body
+    console.log(data)
+    let command = `UPDATE casse SET is_deleted = ${true} WHERE id_casse = ${data.id_casse};`;
     runCommand(command, res)
 })
 
