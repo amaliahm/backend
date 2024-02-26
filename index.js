@@ -258,13 +258,11 @@ async function get_casse() {
     }
 }
 
+/* get caisse */
 
-//li mazal 
-/* get bourse */
-
-async function getBourse() {
+async function get_caisse() {
     try {
-        const rows = await connection.query('SELECT * FROM bourse ORDER BY id DESC');
+        const rows = await connection.query('SELECT * FROM caisse ORDER BY id_caisse DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -294,7 +292,7 @@ async function index () {
         const view_command = await get_view_command()
         const view_reception = await get_view_reception()
         const casse = await get_casse()
-        // const bourse = await getBourse();
+        const caisse = await get_caisse()
         getData = {
             client: client,
             fournisseur: fournisseur,
@@ -314,7 +312,7 @@ async function index () {
             view_command: view_command,
             view_reception: view_reception,
             casse: casse,
-        //     bourse: bourse,
+            caisse: caisse,
         }
     } catch(error) {
         console.log(error)
@@ -537,9 +535,10 @@ app.post('/produits/:id/add', async (req, res) => {
 
 /* add mouvement */
 
-app.post('/bourse/add', async (req, res) => {
+app.post('/caisse/add', async (req, res) => {
     const data = req.body;
-    const command = `INSERT INTO bourse (date, mouvement, quantite, \`prix unitaire\`) VALUES ('${data.jour}-${data.mois}-${data.annee}', '${data.mouvement}', ${data.quantite}, ${data['prix unitaire']});`
+    console.log(data)
+    const command = `INSERT INTO caisse (date, mouvement, quantite, prix_unitaire, ancien_quantite, ancien_valeur, quantite_restant) VALUES ('${data.jour}-${data.mois}-${data.annee}', '${data.mouvement}', ${data.quantite}, ${data['prix unitaire']}, ${data.ancien_quantite}, ${data.ancien_valeur}, ${data.quantite_restant});`
     runCommand(command, res)
 })
 
@@ -778,8 +777,15 @@ app.put('/commands/:id', (req, res) => {
 
 app.put('/casse/:id', (req, res) => {
     const data = req.body;
-    console.log(data)
     const command = `UPDATE casse SET observation = '${data.observation}', prix = ${parseFloat(data.prix)}, poid = ${parseFloat(data.poid)}, total = ${parseFloat(data.total)}, nouveau_solde = ${parseFloat(data.nouveau_solde)}, niveau_stock = '${data.niveau_stock}' WHERE id_casse = ${parseInt(data.id_casse)};`;
+    runCommand(command, res)
+})
+/* update caisse */
+
+app.put('/caisse/:id', (req, res) => {
+    const data = req.body;
+    console.log(data)
+    const command = `UPDATE caisse SET quantite = ${parseFloat(data.quantite)}, prix_unitaire = ${parseFloat(data.prix_unitaire)}, quantite_restant = ${parseFloat(data.quantite_restant)} WHERE id_caisse = ${parseInt(data.id_caisse)};`;
     runCommand(command, res)
 })
 
@@ -903,6 +909,13 @@ app.delete('/casse/:id', (req, res) => {
     const data = req.body
     console.log(data)
     let command = `UPDATE casse SET is_deleted = ${true} WHERE id_casse = ${data.id_casse};`;
+    runCommand(command, res)
+})
+
+app.delete('/caisse/:id', (req, res) => {
+    const data = req.body
+    console.log(data)
+    let command = `UPDATE caisse SET deleted_caisse = ${true} WHERE id_caisse = ${data.id_caisse};`;
     runCommand(command, res)
 })
 
