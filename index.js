@@ -915,8 +915,20 @@ app.delete('/casse/:id', (req, res) => {
 
 app.delete('/caisse/:id', (req, res) => {
     const data = req.body
-    console.log(data)
     let command = `UPDATE caisse SET deleted_caisse = ${true} WHERE id_caisse = ${data.id_caisse};`;
+    runCommand(command, res)
+})
+
+app.delete('/trash', (req, res) => {
+    const data = req.body
+    console.log(data)
+    let command 
+    switch (data.element) {
+        case 'client': 
+            command = data.type === 'restore' ? `UPDATE client SET is_deleted = ${false} WHERE id_client = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            break;
+    }
+    // let command = `UPDATE caisse SET deleted_caisse = ${true} WHERE id_caisse = ${data.id_caisse};`;
     runCommand(command, res)
 })
 
