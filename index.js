@@ -70,7 +70,7 @@ async function get_view_client() {
 
 async function get_view_achat_articles_fournisseur() {
     try {
-        const rows = await connection.query('SELECT * FROM total_view_achats ORDER BY id_achat DESC');
+        const rows = await connection.query('SELECT * FROM view_achat_articles_fournisseur ORDER BY id_achat DESC');
         return rows
     } catch (err) {
         console.log(err)
@@ -118,7 +118,7 @@ async function get_view_versement_client() {
 
 async function get_view_importation() {
     try {
-        const rows = await connection.query('SELECT * FROM view_importation ORDER BY id_achat_importation DESC;;');
+        const rows = await connection.query('SELECT * FROM view_importation ORDER BY id_achat_importation DESC;');
         return rows
     } catch (err) {
         console.log(err)
@@ -126,7 +126,7 @@ async function get_view_importation() {
     }
 }
 
-/* get importations */
+/* get importations ---> to delete */
 
 async function get_importation() {
     try {
@@ -286,7 +286,7 @@ async function index () {
         const view_reparation = await get_view_reparation();
         const view_charge = await get_view_charge();
         const titres = await getTitres();
-        const importation = await get_importation();
+        // const importation = await get_importation();
         const magasin = await get_magasin();
         const view_produits = await get_view_produits()
         const view_command = await get_view_command()
@@ -305,7 +305,7 @@ async function index () {
             view_retour_fournisseur: view_retour_fournisseur,
             view_reparation: view_reparation,
             view_charge: view_charge,
-            importation: importation,
+            // importation: importation,
             magasin: magasin,
             view_produits: view_produits,
             titres: titres,
@@ -582,6 +582,7 @@ app.post('/commands/add-command', async (req, res) => {
     runCommand(command, res)
 })
 
+// to delete
 /* add receptions */
 
 app.post('/receptions/add-reception', async (req, res) => {
