@@ -234,18 +234,6 @@ async function get_view_command() {
     }
 }
 
-/* get view command */
-
-async function get_view_reception() {
-    try {
-        const rows = await connection.query('SELECT * FROM view_reception ORDER BY id_reception DESC');
-        return rows
-    } catch (err) {
-        console.log(err)
-        throw err
-    }
-}
-
 /* get casse */
 
 async function get_casse() {
@@ -290,7 +278,6 @@ async function index () {
         const magasin = await get_magasin();
         const view_produits = await get_view_produits()
         const view_command = await get_view_command()
-        const view_reception = await get_view_reception()
         const casse = await get_casse()
         const caisse = await get_caisse()
         getData = {
@@ -310,7 +297,6 @@ async function index () {
             view_produits: view_produits,
             titres: titres,
             view_command: view_command,
-            view_reception: view_reception,
             casse: casse,
             caisse: caisse,
         }
@@ -582,29 +568,6 @@ app.post('/commands/add-command', async (req, res) => {
     runCommand(command, res)
 })
 
-// to delete
-/* add receptions */
-
-app.post('/receptions/add-reception', async (req, res) => {
-    const receptions = req.body;
-    console.log(receptions)
-    const total_reception = receptions.shift()
-    const command = `INSERT INTO total_reception (poid, monatnt, id_fournisseur , ancien_solde, nombre_piece,\`bon n=°\`,date) VALUES (${total_reception.total_quantite},${total_reception.montant},${receptions[0].id_fournisseur},${total_reception.ancien_solde},${total_reception.nombre_piece},'${total_reception.annee}','${total_reception.annee}-${total_reception.mois}-${total_reception.jour}');`
-    runCommand(command, res)
-    let id 
-    try {
-        id = await connection.query('SELECT MAX(id_total_reception) AS id FROM total_reception;');
-    } catch (err) {
-        console.log(err)
-    }
-    const currentDate = new Date();
-    Object.keys(receptions).map((rec) => {
-        const insert = 
-        `INSERT INTO receptions (id_total_reception, id_article, titre , quantite, chutte, prix_achat, prix_vente, prix_achat_facon, prix_vente_facon, montant_achat, montant_vente) VALUES (${id[0].id},${receptions[rec].id_article},${receptions[rec].titre},${receptions[rec].quantite},${receptions[rec].chutte},${receptions[rec]['prix achat']},${receptions[rec]['prix vente']},${receptions[rec]['prix achat facon']},${receptions[rec]['prix vente facon']},${receptions[rec]['montant achat']},${receptions[rec]['montant vente']});`;
-        runCommand(insert, res)
-    })
-})
-
 /* add casse */
 
 app.post('/casse/add-casse', async (req, res) => {
@@ -806,6 +769,7 @@ app.delete('/fournisseurs/:id_fournisseur', (req, res) => {
 
 app.delete('/achats/:id', (req, res) => {
     const data = req.body
+    console.log(data)
     let command = `UPDATE total_achats SET is_deleted = ${true} WHERE id_total_achat = ${data['0'].id_total_achat}`;
     runCommand(command, res)
 })
@@ -937,10 +901,10 @@ app.delete('/trash', (req, res) => {
             command = data.type === 'restore' ? `UPDATE familles SET is_deleted = ${false} WHERE id_famille = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
             break;
         case 'achat total': 
-            command = data.type === 'restore' ? `UPDATE total_achats SET is_deleted = ${false} WHERE id_total_achat = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE total_achats SET is_deleted = ${false} WHERE id_total_achat = ${data.id};` : `DELETE FROM total_achats WHERE id_total_achat = ${data.id}`;
             break;
         case 'achat': 
-            command = data.type === 'restore' ? `UPDATE achats SET is_deleted = ${false} WHERE id_achat = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE achats SET is_deleted = ${false} WHERE id_achat = ${data.id};` : `DELETE FROM achats WHERE id_achat = ${data.id}`;
             break;
         case 'vente total': 
             command = data.type === 'restore' ? `UPDATE total_ventes SET is_deleted = ${false} WHERE id_total_vente = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
@@ -952,10 +916,10 @@ app.delete('/trash', (req, res) => {
             command = data.type === 'restore' ? `UPDATE command SET is_deleted = ${false} WHERE id_command = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
             break;
         case 'versement client': 
-            command = data.type === 'restore' ? `UPDATE versement_client SET is_deleted = ${false} WHERE id_versement_client = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE versement_client SET is_deleted = ${false} WHERE id_versement_client = ${data.id};` : `DELETE FROM versement_client WHERE id_versement_client = ${data.id}`;
             break;
         case 'versement fournisseur': 
-            command = data.type === 'restore' ? `UPDATE versement_fournisseur SET is_deleted = ${false} WHERE id_versement_fournisseur = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE versement_fournisseur SET is_deleted = ${false} WHERE id_versement_fournisseur = ${data.id};` : `DELETE FROM versement_fournisseur WHERE id_versement_fournisseur = ${data.id}`;
             break;
         case 'importation': 
             command = data.type === 'restore' ? `UPDATE importation SET is_delete = ${false} WHERE id_importation = ${data.id};` : `DELETE FROM importation WHERE id_importation = ${data.id};`;
@@ -995,7 +959,7 @@ app.delete('/trash', (req, res) => {
     runCommand(command, res)
 })
 
-connection.end();
+// connection.end();
 
 export default pool;
 
