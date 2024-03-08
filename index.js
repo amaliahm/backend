@@ -892,13 +892,13 @@ app.delete('/trash', (req, res) => {
             command = data.type === 'restore' ? `UPDATE client SET is_deleted = ${false} WHERE id_client = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
             break;
         case 'fournisseur': 
-            command = data.type === 'restore' ? `UPDATE fournisseur SET is_deleted = ${false} WHERE id_fournisseur = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE fournisseur SET is_deleted = ${false} WHERE id_fournisseur = ${data.id};` : `DELETE FROM fournisseur WHERE id_fournisseur = ${data.id}`;
             break;
         case 'article': 
-            command = data.type === 'restore' ? `UPDATE articles SET is_deleted = ${false} WHERE id_article = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE articles SET is_deleted = ${false} WHERE id_article = ${data.id};` : `DELETE FROM articles WHERE id_article = ${data.id}`;
             break;
         case 'famille': 
-            command = data.type === 'restore' ? `UPDATE familles SET is_deleted = ${false} WHERE id_famille = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE familles SET is_deleted = ${false} WHERE id_famille = ${data.id};` : `DELETE FROM familles WHERE id_famille = ${data.id}`;
             break;
         case 'achat total': 
             command = data.type === 'restore' ? `UPDATE total_achats SET is_deleted = ${false} WHERE id_total_achat = ${data.id};` : `DELETE FROM total_achats WHERE id_total_achat = ${data.id}`;
@@ -907,13 +907,13 @@ app.delete('/trash', (req, res) => {
             command = data.type === 'restore' ? `UPDATE achats SET is_deleted = ${false} WHERE id_achat = ${data.id};` : `DELETE FROM achats WHERE id_achat = ${data.id}`;
             break;
         case 'vente total': 
-            command = data.type === 'restore' ? `UPDATE total_ventes SET is_deleted = ${false} WHERE id_total_vente = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE total_ventes SET is_deleted = ${false} WHERE id_total_vente = ${data.id};` : `DELETE FROM total_ventes WHERE id_total_vente = ${data.id}`;
             break;
         case 'vente': 
-            command = data.type === 'restore' ? `UPDATE ventes SET is_deleted = ${false} WHERE id_vente = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE ventes SET is_deleted = ${false} WHERE id_vente = ${data.id};` : `DELETE FROM ventes WHERE id_vente = ${data.id}`;
             break;
         case 'commande': 
-            command = data.type === 'restore' ? `UPDATE command SET is_deleted = ${false} WHERE id_command = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE command SET is_deleted = ${false} WHERE id_command = ${data.id};` : `DELETE FROM command WHERE id_command = ${data.id}`;
             break;
         case 'versement client': 
             command = data.type === 'restore' ? `UPDATE versement_client SET is_deleted = ${false} WHERE id_versement_client = ${data.id};` : `DELETE FROM versement_client WHERE id_versement_client = ${data.id}`;
@@ -931,28 +931,28 @@ app.delete('/trash', (req, res) => {
             command = data.type === 'restore' ? `UPDATE versement_importation SET is_delete = ${false} WHERE id_versement_importation = ${data.id};` : `DELETE FROM versement_importation WHERE id_versement_importation = ${data.id}`;
             break;
         case 'retour client': 
-            command = data.type === 'restore' ? `UPDATE retour_client SET is_deleted = ${false} WHERE id_retour_client = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE retour_client SET is_deleted = ${false} WHERE id_retour_client = ${data.id};` : `DELETE FROM retour_client WHERE id_retour_client = ${data.id}`;
             break;
         case 'retour fournisseur': 
-            command = data.type === 'restore' ? `UPDATE retour_fournisseur SET is_deleted = ${false} WHERE id_retour_fournisseur = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE retour_fournisseur SET is_deleted = ${false} WHERE id_retour_fournisseur = ${data.id};` : `DELETE FROM retour_fournisseur WHERE id_retour_fournisseur = ${data.id}`;
             break;
         case 'magasin': 
-            command = data.type === 'restore' ? `UPDATE magasin SET is_deleted = ${false} WHERE id_magasin = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE magasin SET is_deleted = ${false} WHERE id_magasin = ${data.id};` : `DELETE FROM magasin WHERE id_magasin = ${data.id}`;
             break;
         case 'reparation': 
-            command = data.type === 'restore' ? `UPDATE reparation SET is_deleted = ${false} WHERE id_reparation = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE reparation SET is_deleted = ${false} WHERE id_reparation = ${data.id};` : `DELETE FROM reparation WHERE id_reparation = ${data.id}`;
             break;
         case 'charge': 
-            command = data.type === 'restore' ? `UPDATE charge SET is_deleted = ${false} WHERE id_charge = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE charge SET is_deleted = ${false} WHERE id_charge = ${data.id};` : `DELETE FROM charge WHERE id_charge = ${data.id}`;
             break;
         case 'sous type': 
-            command = data.type === 'restore' ? `UPDATE sous_type_charge SET is_deleted = ${false} WHERE id_sous_type = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE sous_type_charge SET is_deleted = ${false} WHERE id_sous_type = ${data.id};` : `DELETE FROM sous_type_charge WHERE id_sous_type = ${data.id}`;
             break;
         case 'type': 
-            command = data.type === 'restore' ? `UPDATE type_charge SET is_deleted = ${false} WHERE id_type = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE type_charge SET is_deleted = ${false} WHERE id_type = ${data.id};` : `DELETE FROM type_charge WHERE id_type = ${data.id}`;
             break;
         case 'titre': 
-            command = data.type === 'restore' ? `UPDATE titres SET is_deleted = ${false} WHERE id_titre = ${data.id};` : `DELETE FROM client WHERE id_client = ${data.id}`;
+            command = data.type === 'restore' ? `UPDATE titres SET is_deleted = ${false} WHERE id_titre = ${data.id};` : `DELETE FROM titres WHERE id_titre = ${data.id}`;
             break;
     }
     // let command = `UPDATE caisse SET deleted_caisse = ${true} WHERE id_caisse = ${data.id_caisse};`;
