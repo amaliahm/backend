@@ -436,7 +436,8 @@ app.post('/ventes/add-vente', async (req, res) => {
 
 app.post('/versements/add-versement-client', async (req, res) => {
     const data = req.body;
-    const command = `INSERT INTO versement_client (versement_or, versement_casse, ancien_solde, ancien_solde_casse, versement_argent, or_v , id_client, net_750, fonte, id_titre, \`versement client n=°\`, date) VALUES (${data["versement or"]}, ${data["versement casse"]}, ${data.solde}, ${0}, ${data["versement argent"]}, ${data["or v"]}, ${data.id_client}, ${data['net 750']}, ${data.fonte}, ${data.id_titre}, '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
+    console.log(data)
+    const command = `INSERT INTO versement_client (versement_or, ancien_solde, versement_argent, or_v , id_client, net_750, fonte, id_titre, \`versement client n=°\`, date) VALUES (${data["versement or"]}, ${data.solde}, ${data["versement argent"]}, ${data["or v"]}, ${data.id_client}, ${data['net 750']}, ${data.fonte}, ${data.id_titre}, '${data.annee}', '${data.annee}-${data.mois}-${data.jour}');`;
     runCommand(command, res)
 })
 
